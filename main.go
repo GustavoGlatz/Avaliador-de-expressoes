@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"unicode" //ASCII
+	"unicode"
 )
 
 type no struct {
@@ -41,7 +41,7 @@ func parser(tokens []string) *no {
 		} else if isOperator(token) {
 			for len(pilha) > 0 && precedencia(pilha[len(pilha)-1].valor) >= precedencia(token) {
 				filaSaida = append(filaSaida, pilha[len(pilha)-1])
-				pilha = pilha[:len(pilha)-1] //remove o topo da pilha
+				pilha = pilha[:len(pilha)-1]
 			}
 			pilha = append(pilha, &no{valor: token})
 		} else if token == "(" {
@@ -55,17 +55,15 @@ func parser(tokens []string) *no {
 		}
 	}
 
-	// Tira os elementos restantes da pilha para a fila
 	for len(pilha) > 0 {
 		filaSaida = append(filaSaida, pilha[len(pilha)-1])
 		pilha = pilha[:len(pilha)-1]
 	}
 
-	// Construção da arvore pela fila
 	for len(filaSaida) > 1 {
 		for i := 0; i < len(filaSaida); i++ {
 			if isOperator(filaSaida[i].valor) && filaSaida[i].esquerdo == nil && filaSaida[i].direito == nil {
-				// Tira o operador e operandos
+
 				operador := filaSaida[i]
 				esquerda := filaSaida[i-2]
 				direita := filaSaida[i-1]
@@ -75,13 +73,10 @@ func parser(tokens []string) *no {
 
 				filaAux := []*no{}
 
-				// Adiciona os elementos anteriores ao operador
 				filaAux = append(filaAux, filaSaida[:i-2]...)
 
-				// Adiciona o operador (que agora é o nó da subárvore)
 				filaAux = append(filaAux, operador)
 
-				// Adiciona os elementos restantes após os dois operandos e o operador
 				filaAux = append(filaAux, filaSaida[i+1:]...)
 
 				filaSaida = filaAux
@@ -94,18 +89,15 @@ func parser(tokens []string) *no {
 	return filaSaida[0]
 }
 
-// Função que converte a árvore de expressão para uma string
 func toString(node *no) string {
 	if node == nil {
 		return ""
 	}
 
-	// Se o nó é folha, retorna o valor
 	if node.esquerdo == nil && node.direito == nil {
 		return node.valor
 	}
 
-	// Concatena a expressão em ordem in-fixa
 	leftStr := toString(node.esquerdo)
 	rightStr := toString(node.direito)
 
@@ -121,7 +113,6 @@ func reader(filename string) ([]string, error) {
 
 	var expressions []string
 
-	//Le o arquivo linha por linha
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
@@ -162,7 +153,6 @@ func lexer(input string) []string {
 				currentToken = ""
 			}
 
-			// Verifica se o '-' é um operador unário ou binário
 			if len(tokens) == 0 || tokens[len(tokens)-1] == "(" || tokens[len(tokens)-1] == "+" ||
 				tokens[len(tokens)-1] == "-" || tokens[len(tokens)-1] == "*" || tokens[len(tokens)-1] == "/" {
 				currentToken = "-" //binário
