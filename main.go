@@ -101,7 +101,7 @@ func toString(node *no) string {
 	leftStr := toString(node.esquerdo)
 	rightStr := toString(node.direito)
 
-	return fmt.Sprintf("%s %s %s", leftStr, node.valor, rightStr)
+	return fmt.Sprintf("(%s %s %s)", leftStr, node.valor, rightStr)
 }
 
 func reader(filename string) ([]string, error) {
